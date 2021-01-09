@@ -18,5 +18,5 @@ body {
 }
 
 a {
-  text-decoration: none;
+  text-decoration: none; /* remove todas as tag a */
 }
