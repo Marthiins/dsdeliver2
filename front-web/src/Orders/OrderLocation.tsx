@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import AsyncSelect from 'react-select/async';
 import { fetchLocalMapBox } from '../api';
+import { OrderLocationdata } from './types';
 const initialPosition = {
     lat :51.505, 
     lng: -0.09
@@ -17,7 +18,11 @@ position: {
 
 }
 
-function OrderLocation() {
+type Props = {
+    onChangeLocation:(location: OrderLocationdata) => void;
+}
+
+function OrderLocation({onChangeLocation}: Props) {
 const [address, setAddress] = useState<Place>({
 position: initialPosition
 });
@@ -41,11 +46,11 @@ position: initialPosition
       
       const handleChangeSelect = (place: Place) => {
         setAddress(place);
-// onChangeLocation({
-//   latitude: place.position.lat,
-//   longitude: place.position.lng,
-//   address: place.label!
-// });
+onChangeLocation({
+latitude: place.position.lat,
+longitude: place.position.lng,
+address: place.label!
+});
       };
     return (
         <div className="order-location-container">
@@ -64,6 +69,7 @@ position: initialPosition
                 <MapContainer 
                 center={address.position} 
                 zoom={13} 
+                key={address.position.lat}
                 scrollWheelZoom
                 >
                     <TileLayer
@@ -72,7 +78,7 @@ position: initialPosition
                     />
                     <Marker position={address.position}>
                         <Popup>
-                            A pretty CSS3 popup. <br /> Easily customizable.
+                           {address.label}
       </Popup>
                     </Marker>
                 </MapContainer>
