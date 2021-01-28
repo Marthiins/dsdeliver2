@@ -9,32 +9,27 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-
 @Entity
-@Table(name = "tb_order") //Nome da tabela no meu banco de Dados//
-public class Order implements Serializable{
+@Table(name = "tb_order") // Nome da tabela no meu banco de Dados//
+public class Order implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	@Id  //Chave Primaria//
-	@GeneratedValue(strategy = GenerationType.IDENTITY) //Auto incremento//
+
+	@Id // Chave Primaria//
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // Auto incremento//
 	private Long id;
 	private String address;
 	private Double latitude;
 	private Double longitude;
 	private Instant moment;
 	private OrderStatus status;
-	
-@ManyToMany  //Tabela muitos para muitos//
-@JoinTable(name = "tb_order_product",
-    joinColumns = @JoinColumn(name = "order_id"),  //Chave estrangeira refernciando a tabela TB_ORDER//
-    inverseJoinColumns = @JoinColumn(name = "product_id"))
-	private Set<Product> products = new HashSet<>();
+
+	@OneToMany(mappedBy = "id.order")
+	private Set<OrderProducts> products = new HashSet<>();
+	// O Set acima é para que o próprio Java garante que não haja pedidos repetidos;
 
 	public Order() {
 	}
@@ -47,6 +42,15 @@ public class Order implements Serializable{
 		this.longitude = longitude;
 		this.moment = moment;
 		this.status = status;
+	}
+
+	// Realizara o calculo de todos os produtos com base no calculo do producto;
+	public Double getTotal() {
+		double sum = 0.0;
+		for (OrderProducts oi : products) {
+			sum += oi.getSubTotal();
+		}
+		return sum;
 	}
 
 	public Long getId() {
@@ -96,17 +100,13 @@ public class Order implements Serializable{
 	public void setStatus(OrderStatus status) {
 		this.status = status;
 	}
-	
-	public Double getTotal() {
-		double sum = 0.0;
-		for (Product p : products) {
-			sum += p.getPrice();
-		}
-		return sum;
+
+	public Set<OrderProducts> getProducts() {
+		return products;
 	}
 
-	public Set<Product> getProducts() {
-		return products;
+	public void setProducts(Set<OrderProducts> products) {
+		this.products = products;
 	}
 
 	@Override

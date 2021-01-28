@@ -1,12 +1,17 @@
 package com.devsuperior.dsdeliver.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_product") //Nome da tabela no meu banco de Dados//
@@ -21,7 +26,11 @@ public class Product implements Serializable{
 	private Double price;
 	private String description;
 	private String imageUri;
-
+	
+	//Upgrade
+	@JsonIgnore
+	@OneToMany(mappedBy = "id.product")
+	Set<OrderProducts> itens = new HashSet<>();
 
 	public Product() {
 	}
@@ -75,7 +84,13 @@ public class Product implements Serializable{
 		this.imageUri = imageUri;
 	}
 
+	public Set<OrderProducts> getItens() {
+		return itens;
+	}
 
+	public void setItens(Set<OrderProducts> itens) {
+		this.itens = itens;
+	}
 	
 	@Override
 	public int hashCode() {
